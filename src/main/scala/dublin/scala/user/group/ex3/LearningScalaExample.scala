@@ -7,19 +7,19 @@ object LearningScalaExample {
     learnScala(CreditCard(2000))
   }
 
-  private def buyCourseraSubscription(creditCard: CreditCard): (CreditCard, Item) = {
+  def buyCourseraSubscription(creditCard: CreditCard): (CreditCard, Item) = {
     creditCard.copy(balance = creditCard.balance - ScalaCourse.price) -> ScalaCourse
   }
 
-  private def buyRedBook(creditCard: CreditCard): (CreditCard, Item) = {
+  def buyRedBook(creditCard: CreditCard): (CreditCard, Item) = {
     creditCard.copy(balance = creditCard.balance - RedBook.price) -> RedBook
   }
 
-  private def buyScalaDaysTickets(creditCard: CreditCard): (CreditCard, Item) = {
+  def buyScalaDaysTickets(creditCard: CreditCard): (CreditCard, Item) = {
     creditCard.copy(balance = creditCard.balance - ScalaDaysTickets.price) -> ScalaDaysTickets
   }
 
-  private def postTweet(items: List[Item], creditCard: CreditCard): Unit =
+  def postTweet(items: List[Item], creditCard: CreditCard): Unit =
     println(s"Check this out ${items.mkString(",")}. And I have ${creditCard.balance} left on my account")
 
   def learnScala(creditCard: CreditCard): Unit = {

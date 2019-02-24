@@ -23,7 +23,7 @@ object LearninScalaExample {
     creditCard.copy(balance = creditCard.balance - ScalaDaysTickets.price) -> ScalaDaysTickets
   )
 
-  private def postTweet(items: List[Item], creditCard: CreditCard): Unit =
+  def postTweet(items: List[Item], creditCard: CreditCard): Unit =
     println(s"Check this out ${items.mkString(",")}. And I have ${creditCard.balance} left on my account")
 
   def postTweetIO(items: List[Item], creditCard: CreditCard): IO[Unit] =

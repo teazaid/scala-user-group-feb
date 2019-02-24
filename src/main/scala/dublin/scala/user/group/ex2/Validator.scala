@@ -5,19 +5,6 @@ import cats.implicits._
 import dublin.scala.user.group.model.User
 import scala.util.Try
 
-class Validator[F[_]](implicit mE: MonadError[F, String]) {
-
-  def validateUser(userToValidate: User)(): F[User] = for {
-    _ <- validateAge(userToValidate)
-    _ <- validatePassword(userToValidate)
-  } yield userToValidate
-
-  private def validateAge(user: User): F[User] =
-    if (user.age >= 18) mE.pure(user) else mE.raiseError("Age is not valid")
-
-  private def validatePassword(user: User): F[User] =
-    if (user.password.length >= 6) mE.pure(user) else mE.raiseError("Password is not valid")
-}
 
 object Runner {
   implicit val monadErrorOpt = new MonadError[Option, String] {
@@ -42,19 +29,19 @@ object Runner {
     }
   }
 
-  type Effect[T] = Try[T]
-  type Error = String
+  type F[T] = Try[T]
+  type E = String
 
-  implicit val mE = new MonadError[Effect, Error] {
-    override def raiseError[A](e: Error): Effect[A] = ???
+  implicit val mE = new MonadError[F, E] {
+    override def raiseError[A](e: E): F[A] = ???
 
-    override def handleErrorWith[A](fa: Effect[A])(f: Error => Effect[A]): Effect[A] = ???
+    override def handleErrorWith[A](fa: F[A])(f: E => F[A]): F[A] = ???
 
-    override def pure[A](x: A): Effect[A] = ???
+    override def pure[A](x: A): F[A] = ???
 
-    override def flatMap[A, B](fa: Effect[A])(f: A => Effect[B]): Effect[B] = ???
+    override def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B] = ???
 
-    override def tailRecM[A, B](a: A)(f: A => Effect[Either[A, B]]): Effect[B] = ???
+    override def tailRecM[A, B](a: A)(f: A => F[Either[A, B]]): F[B] = ???
   }
 
   def main(args: Array[String]): Unit = {
@@ -64,4 +51,22 @@ object Runner {
     val validatorEither = new Validator[Either[String, ?]]()
     validatorEither.validateUser(User("user2", 18, "weak"))
   }
+
+  type ValidationError[F[_]] = MonadError[F, String]
+
+  class Validator[F[_]: ValidationError] {
+    val mE = implicitly[ValidationError[F]]
+
+    def validateUser(userToValidate: User)(): F[User] = for {
+      _ <- validateAge(userToValidate)
+      _ <- validatePassword(userToValidate)
+    } yield userToValidate
+
+    private def validateAge(user: User): F[User] =
+      if (user.age >= 18) mE.pure(user) else mE.raiseError("Age is not valid")
+
+    private def validatePassword(user: User): F[User] =
+      if (user.password.length >= 6) mE.pure(user) else mE.raiseError("Password is not valid")
+  }
+
 }
