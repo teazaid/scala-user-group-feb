@@ -27,7 +27,7 @@ object LearninScalaExample {
     println(s"Check this out ${items.mkString(",")}. And I have ${creditCard.balance} left on my account")
 
   def postTweetIO(items: List[Item], creditCard: CreditCard): IO[Unit] =
-    IO(println(s"Check this out ${items.mkString(",")}. And I have ${creditCard.balance} left on my account"))
+    IO(postTweet(items, creditCard))
 
   def learnScala(): State[CreditCard, Unit] =
     for {
