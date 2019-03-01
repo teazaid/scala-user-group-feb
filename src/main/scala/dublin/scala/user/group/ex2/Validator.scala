@@ -3,6 +3,8 @@ package dublin.scala.user.group.ex2
 import cats.MonadError
 import cats.implicits._
 import dublin.scala.user.group.model.User
+
+import scala.annotation.tailrec
 import scala.util.Try
 
 
@@ -23,9 +25,11 @@ object Runner {
       b <- f(a)
     } yield b
 
-    override def tailRecM[A, B](a: A)(f: A => Option[Either[A, B]]): Option[B] = flatMap(f(a)) {
-      case Right(v) => Some(v)
-      case Left(_) => tailRecM(a)(f)
+    @tailrec
+    override def tailRecM[A, B](a: A)(f: A => Option[Either[A, B]]): Option[B] = f(a) match {
+      case None => None
+      case Some(Left(a1)) => tailRecM(a1)(f)
+      case Some(Right(b)) => Some(b)
     }
   }
 
